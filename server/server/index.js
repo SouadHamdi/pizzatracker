@@ -1,7 +1,8 @@
 const express = require("express");
-
+const {getAllPizzas,getAllUsers} =require("../database/index.js")
 const db = require("../database");
-
+const User=require("../database/user.js")
+const Pizza=require("../database/pizza.js")
 const app = express();
 const PORT = 3000;
 
@@ -16,6 +17,7 @@ app.get("/api/pizza", (req, res) => {
   });
 });
 
+//GET DATA FROM PIZZAS dataBase
 app.post("/api/pizza", (req, res) => {
   console.log(req.body);
   db.addPizza(
@@ -41,6 +43,46 @@ app.delete("/api/employee/:employee_id", function (req, res) {
     }
   );
 });
+
+//UPDATE ONE PIZZA
+app.put('/api/pizza/:pizza_id', function(req, res) {
+	// create mongose method to update a existing record into collection
+	let id = req.params.pizza_id;
+	var data = {
+		photo : req.body.photo,
+		name:req.body.name,
+		price:req.body.price,
+		popularity : req.body.popularity,
+		description:req.body.description,
+	}
+	// save the pizza's data
+	Pizza.findByIdAndUpdate(id, data, function(err, pizza) {
+	if (err) throw err;
+ 
+	res.send('Successfully! pizza updated  ');
+	});
+});
+//USER PART
+//POST A NEW USER
+app.post('/api/user', function(req, res) {
+	// create mongose method to create a new record into collection
+	User.create({
+		name : req.body.name,
+		email:req.body.email,
+		password : req.body.password,
+		role : req.body.role
+	}, function(err, results) {
+    err?res.status((500)).send(err):res.status(200).json(results)
+	});
+
+});
+//GET USERS DATA FROM DATABASE USERS
+app.get('/api/user', (req, res) => {
+	getAllUsers((err,results)=>{
+	  err?res.status((500)).send(err):res.status(200).json(results)
+	 })
+
+  });
 
 app.listen(PORT, () => {
   console.log(`listening on port ${PORT}`);

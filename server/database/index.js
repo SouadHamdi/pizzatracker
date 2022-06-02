@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const mongoUri = "mongodb://localhost/pizza";
 const Pizza = require("./pizza.js");
+const User=require("./user.js");
 mongoose.connect(
   mongoUri,
   { useUnifiedTopology: true, useNewUrlParser: true },
@@ -32,9 +33,17 @@ const updatePopularity = async function (popularity) {
   return await Pizza.updateOne({ popularity: popularity });
 };
 
+//GET ALL users FROM THE DATABASE
+
+const getAllUsers = function (cb) {
+  User.find({},(err,res)=>{
+   err?cb(err,null):cb(null,res)
+  })
+  } 
 module.exports = {
   db,
   getAllPizzas,
   addPizza,
   updatePopularity,
+  getAllUsers
 };
